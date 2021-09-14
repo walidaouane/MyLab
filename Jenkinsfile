@@ -29,7 +29,17 @@ pipeline{
             }
         }
 
-        // Stage3 : Publish the artifacts to Nexus
+        // Stage3 : Publish the source code to Sonarqube
+        stage ('Sonarqube Analysis'){
+            steps {
+                echo ' Source code published to Sonarqube for SCA ...'
+                withSonarQubeEnv('sonarqube-server'){ // You can override the credential to be used
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        // Stage4 : Publish the artifacts to Nexus
         stage ('Publish to Nexus'){
             steps {
                 script {
@@ -52,7 +62,7 @@ pipeline{
             }
         }
 
-        // Stage4 : ¨Print some information
+        // Stage5 : ¨Print some information
         stage ('Print Environment variables'){
             steps {
                 echo "Artifact Id is '${ArtifactId}'"
@@ -63,7 +73,7 @@ pipeline{
             }
         }
 
-        // Stage5 : Deploying
+        // Stage6 : Deploying
         stage ('Deploy to tomcat server'){
             steps {
                 echo ' deploying......'
@@ -84,7 +94,7 @@ pipeline{
             }
         }
 
-        // Stage6 : Deploying the build artifact to Docker
+        // Stage7 : Deploying the build artifact to Docker
         stage ('Deploy to Docker'){
             steps {
                 echo ' deploying......'
